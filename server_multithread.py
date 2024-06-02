@@ -1,14 +1,6 @@
 from socket import *
 import threading
-
-def contentType(headers):
-    # Mencari content-type dari header
-    for header in headers:
-        if header.lower().startswith('content-type'):
-            content_type = header.split(': ')[1].strip()
-            return content_type
-
-    return 'text/html'
+import mimetypes 
 
 def handle_client(client_connection):
     request = client_connection.recv(1024).decode()
@@ -23,15 +15,14 @@ def handle_client(client_connection):
         file_requested = '/index.html'
     try:
         #Membuka file yang diminta oleh klien
-        with open(file_requested[1:], 'rb') as file:
+        with open('./data/'+file_requested, 'rb') as file:
             content = file.read()
 
         #Mengambil content-type dari request klien
-        content_type = contentType(headers)
+        content_type, _ = mimetypes.guess_type(file_requested)
         #Membuat response header dengan kode 200 OK dan tipe content
         response_header = f'HTTP/1.0 200 OK\nContent-Type: {content_type}\n\n'.encode()
-        response_content = content
-        client_connection.send(response_header+response_content)
+        client_connection.send(response_header+content)
     except FileNotFoundError:
         #Error Hnadling jika file yang direquest tidak ditemukan
         response_header = 'HTTP/1.0 404 NOT FOUND\n\nFile Not Found'.encode()
@@ -51,10 +42,8 @@ def run_server(server_hostname, server_port):
         client_handler.start()
 
 def main():
-    server_hostname = 'localhost'  # Inisialisasi 'localhost' sebagai alamat host
-    server_port = 6969  # Inisialisasi 4510 sebagai alamat port
-    
-    # Memulai server dengan host dan port yang ditentukan
+    server_hostname = 'localhost'
+    server_port = 6969
     run_server(server_hostname, server_port)
 
 # Memanggil fungsi main
