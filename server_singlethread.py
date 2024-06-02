@@ -1,6 +1,7 @@
 from socket import *
 import mimetypes
 
+
 def handle_client(client_connection):
     request = client_connection.recv(1024).decode()
     print(request)
@@ -21,8 +22,7 @@ def handle_client(client_connection):
         content_type, _ = mimetypes.guess_type(file_requested)
         # Membuat response header dengan kode 200 OK dan tipe content
         response_header = f'HTTP/1.0 200 OK\nContent-Type: {content_type}\n\n'.encode()
-        response_content = content
-        client_connection.send(response_header + response_content)
+        client_connection.send(response_header + content)
     except FileNotFoundError:
         # Error Handling jika file yang direquest tidak ditemukan
         response_header = 'HTTP/1.0 404 NOT FOUND\n\nFile Not Found'.encode()
