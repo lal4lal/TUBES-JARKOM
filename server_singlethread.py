@@ -5,7 +5,7 @@ import mimetypes
 def handle_client(client_connection):
     request = client_connection.recv(1024).decode()
     print(request)
-    # Memisahkan header per baris
+    # Memisahkan request per baris
     headers = request.split('\n')
     # Mengambil file yang diminta yang ada pada header
     # pada baris pertama setelah request method
