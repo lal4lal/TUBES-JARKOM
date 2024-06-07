@@ -1,46 +1,46 @@
 from socket import *
 import sys
 
-def minta_file(nama_server, port_server, file_diminta):
-    # Buat socket TCP/IP
-    socket_klien = socket(AF_INET, SOCK_STREAM)
-    socket_klien.connect((nama_server, port_server))
+def request_file(server_hostname, server_port, file_requested):
+    # Membuat TCP socket
+    client_socket = socket(AF_INET, SOCK_STREAM)
+    client_socket.connect((server_hostname, server_port))
     
-    # Formulasikan permintaan HTTP GET
-    permintaan = f'GET {file_diminta} HTTP/1.0\r\nHost: {nama_server}\r\n\r\n'
-    socket_klien.send(permintaan.encode())
+    # Membikin request dengan format HTTP GET
+    request = f'GET {file_requested} HTTP/1.0\r\nHost: {server_hostname}\r\n\r\n'
+    client_socket.send(request.encode())
     
-    # Terima respons dari server
-    respons = b''
+    # Menerima respon dari server
+    response = b''
     while True:
-        chunk = socket_klien.recv(1024)
+        chunk = client_socket.recv(1024)
         if not chunk:
             break
-        respons += chunk
+        response += chunk
     
     # Tutup koneksi
-    socket_klien.close()
+    client_socket.close()
     
-    # Pisahkan respons menjadi header dan body
-    akhir_header = respons.find(b'\r\n\r\n')
-    if akhir_header != -1:
-        header = respons[:akhir_header].decode()
-        body = respons[akhir_header + 4:]
+    # bagi respon menjadi header dan boy
+    header_end = response.find(b'\r\n\r\n')
+    if header_end != -1:
+        header = response[:header_end].decode()
+        body = response[header_end + 4:]
     else:
-        header = respons.decode()
+        header = response.decode()
         body = b''
     
-    # Cetak header dan body
+    # Print headers dan body
     print(header)
     if body:
         print(body.decode())
 
 if len(sys.argv) != 4:
-    print(f"Usage: {sys.argv[0]} <nama_server> <port_server> <file_diminta>")
+    print(f"Usage: {sys.argv[0]} <serverhost> <serverport> <filerequested>")
     sys.exit(1)
-nama_server = sys.argv[1]  # Nama server
-port_server = int(sys.argv[2])  # Port server
-file_diminta = sys.argv[3]  # File yang diminta
+server_hostname = sys.argv[1]  # Server hostname
+server_port = int(sys.argv[2])  # Server port
+file_requested = sys.argv[3]  # File requested
     
-# Minta file dari server dan cetak isinya ke terminal
-minta_file(nama_server, port_server, file_diminta)
+# Request file ke server dan menampilkan content pada terminal
+request_file(server_hostname, server_port, file_requested)
