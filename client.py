@@ -46,4 +46,3 @@ file_requested = sys.argv[3]  # File requested
     
 # Request file ke server dan menampilkan content pada terminal
 request_file(server_hostname, server_port, file_requested)
- 
